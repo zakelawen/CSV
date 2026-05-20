@@ -25,7 +25,7 @@
 # class TSVLayer(nn.Module):
 #     """
 #     Steering vector injection layer.
-#     Adds λ * v to all token positions.
+#     Adds lambda * v to all token positions.
 
 #     v / tsv is stored in fp32 for optimizer stability.
 #     It is cast to the hidden states' dtype and device during forward.
@@ -203,8 +203,8 @@ wrapper delegates the full forward pass to the original decoder layer, then
 injects the steering vector into the layer's hidden_states output.
 
 Architecture-specific return types:
-    - LLaMA / Gemma2 / Mistral / etc.   → returns a tuple (hidden_states, ...)
-    - Qwen3 / Qwen3MoE                  → returns a Tensor (just hidden_states)
+    - LLaMA / Gemma2 / Mistral / etc.   -> returns a tuple (hidden_states, ...)
+    - Qwen3 / Qwen3MoE                  -> returns a Tensor (just hidden_states)
 
 The wrapper records this distinction at __init__ time so forward() can preserve
 the correct return type. This is critical because the parent model's forward
@@ -233,7 +233,7 @@ _TENSOR_RETURNING_LAYERS = {
 class TSVLayer(nn.Module):
     """
     Steering vector injection layer.
-    Adds λ * v to all token positions.
+    Adds lambda * v to all token positions.
 
     v / tsv is stored in fp32 for optimizer stability.
     It is cast to the hidden states' dtype and device during forward.
@@ -315,8 +315,8 @@ class LlamaDecoderLayerWrapper(nn.Module):
         Run the original decoder layer, then inject CSV into hidden_states.
 
         Return-type behavior is decided at __init__ time:
-          - Tensor-returning layers (Qwen3) → return a Tensor
-          - Tuple-returning layers (LLaMA/Gemma2) → return a tuple, with
+          - Tensor-returning layers (Qwen3) -> return a Tensor
+          - Tuple-returning layers (LLaMA/Gemma2) -> return a tuple, with
             outputs[0] replaced by CSV-injected hidden_states.
         """
 

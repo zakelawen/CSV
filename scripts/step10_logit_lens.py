@@ -19,35 +19,35 @@ Concretely, this script answers three questions per model:
 
   Q2 (which layer):
       At which transformer layer is the gap
-      ΔP = logP(answer | gold) - logP(answer | no_ctx)
+      DeltaP = logP(answer | gold) - logP(answer | no_ctx)
       maximized? This determines where CD should be applied.
       If the gap peaks at the final layer, standard CD; if it peaks
       mid-network, DoLA-style CD using that layer's logits is preferable.
 
   Q3 (asymmetry):
       Does a distracting document actually depress the answer signal?
-      ΔP_dis = logP(answer | dis) - logP(answer | no_ctx) should be
-      ≤ 0 (and ideally clearly negative).
+      DeltaP_dis = logP(answer | dis) - logP(answer | no_ctx) should be
+      <= 0 (and ideally clearly negative).
 
 Method (logit lens, teacher forcing)
 =====================================
-For each sample s and each context condition c ∈ {no, gold, dis}:
+For each sample s and each context condition c in {no, gold, dis}:
 
   prompt_c = build_prompt(question, doc_for_c)
   full_ids = prompt_c_ids + answer_ids       # teacher forcing
   output   = model(full_ids, output_hidden_states=True)
-  hs[ℓ]    = output.hidden_states[ℓ]         # [1, T, D]   ℓ=0..L
+  hs[ell]    = output.hidden_states[ell]         # [1, T, D]   ell=0..L
 
-For each layer ℓ:
-  if ℓ is the final hidden state:
-      norm_hs = hs[ℓ]                        # already final-normalized by HF model
+For each layer ell:
+  if ell is the final hidden state:
+      norm_hs = hs[ell]                        # already final-normalized by HF model
   else:
-      norm_hs = final_layernorm(hs[ℓ])       # critical for intermediate logit lens
+      norm_hs = final_layernorm(hs[ell])       # critical for intermediate logit lens
 
-  logits[ℓ]  = lm_head(norm_hs)              # [1, T, V]
-  logits[ℓ]  = apply_final_logit_softcapping_if_needed(logits[ℓ])
-  per_token_logP[ℓ, t] = log_softmax(logits[ℓ, prompt_len + t - 1])[answer_ids[t]]
-  per_sample_logP[ℓ] = mean_t( per_token_logP[ℓ, t] )
+  logits[ell]  = lm_head(norm_hs)              # [1, T, V]
+  logits[ell]  = apply_final_logit_softcapping_if_needed(logits[ell])
+  per_token_logP[ell, t] = log_softmax(logits[ell, prompt_len + t - 1])[answer_ids[t]]
+  per_sample_logP[ell] = mean_t( per_token_logP[ell, t] )
 
 The classic "next-token" formulation: at position prompt_len + t - 1, we
 predict answer_ids[t]. This is teacher forcing, identical to how
@@ -93,7 +93,7 @@ Span aggregation
 ================
 "Answer signal" per sample, per condition, per layer:
 
-  signal[s, c, ℓ] = mean over answer tokens of logP(answer_t | ...)
+  signal[s, c, ell] = mean over answer tokens of logP(answer_t | ...)
 
 We average logP, not P, because P fluctuates over many orders of magnitude
 across layers; mean logP is more numerically stable and matches how CD is
@@ -101,7 +101,7 @@ computed.
 
 For reporting we convert:
 
-  P_mean[c, ℓ] = exp(mean_s(signal[s, c, ℓ]))
+  P_mean[c, ell] = exp(mean_s(signal[s, c, ell]))
 
 Multiple answers per sample
 ---------------------------
@@ -117,7 +117,7 @@ Why select using no_ctx?
   - We want the baseline to be fair. Using gold_ctx to select the answer
     would bias toward whichever phrasing was promoted by the gold document.
   - Using the same canonical answer across all three conditions makes
-    within-sample ΔP an apples-to-apples comparison.
+    within-sample DeltaP an apples-to-apples comparison.
 
 Outputs
 -------
@@ -326,7 +326,7 @@ def compute_per_layer_answer_logp(
 ):
     """
     For one (prompt, answer) pair, run a single forward pass with
-    output_hidden_states=True, then for each layer ℓ compute the mean
+    output_hidden_states=True, then for each layer ell compute the mean
     log-probability assigned to the answer tokens under teacher forcing.
 
     Args:
@@ -423,14 +423,14 @@ def process_model(
     print(f"  hf_name: {hf_name}")
 
     # --- Load tokenizer ---
-    print("  Loading tokenizer …")
+    print("  Loading tokenizer ...")
     tokenizer = AutoTokenizer.from_pretrained(hf_name)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     print(f"    pad_token = {tokenizer.pad_token!r} (id={tokenizer.pad_token_id})")
 
     # --- Load model ---
-    print("  Loading model …")
+    print("  Loading model ...")
     model = AutoModelForCausalLM.from_pretrained(
         hf_name,
         torch_dtype=torch.float16,
@@ -452,7 +452,7 @@ def process_model(
 
     # Read final_logit_softcapping from model config.
     # Gemma2 / VaultGemma / T5Gemma2: typically 30.0
-    # Qwen3 / LLaMA / Mistral: not set or None → no softcap applied.
+    # Qwen3 / LLaMA / Mistral: not set or None -> no softcap applied.
     softcap = getattr(model.config, "final_logit_softcapping", None)
     if softcap is not None:
         softcap = float(softcap)
@@ -493,11 +493,11 @@ def process_model(
     else:
         print(f"  Using all {len(samples)} eval samples")
 
-    # --- Forward each sample × each condition ---
+    # --- Forward each sample x each condition ---
     conditions = ["no_ctx", "gold_ctx", "dis_ctx"]
     n_samples = len(samples)
 
-    # signal[c][s, ℓ]
+    # signal[c][s, ell]
     signal = {
         c: np.full((n_samples, L_plus_1), np.nan, dtype=np.float64)
         for c in conditions
@@ -664,8 +664,8 @@ def process_model(
             ),
         }
 
-    # ΔP curves per layer. Compute mean over samples of within-sample diff:
-    #   signal[gold, s, ℓ] - signal[no, s, ℓ]
+    # DeltaP curves per layer. Compute mean over samples of within-sample diff:
+    #   signal[gold, s, ell] - signal[no, s, ell]
     def per_sample_diff_mean(arr_a, arr_b, mask):
         diff = arr_a - arr_b
         sub = diff[mask]
@@ -730,11 +730,11 @@ def process_model(
         if v is None:
             print(f"    {cond:9s}: logP=None")
         else:
-            print(f"    {cond:9s}: logP={v:.4f}  P≈{np.exp(v):.4f}")
-    print(f"  ΔP_gold-no  peak: layer {peak_layer}, value = {peak_value:+.4f}")
-    print(f"  ΔP_dis-no   final-layer: {delta_dis_no[-1]:+.4f}")
+            print(f"    {cond:9s}: logP={v:.4f}  P~{np.exp(v):.4f}")
+    print(f"  DeltaP_gold-no  peak: layer {peak_layer}, value = {peak_value:+.4f}")
+    print(f"  DeltaP_dis-no   final-layer: {delta_dis_no[-1]:+.4f}")
     print(f"  Answer signal emerge layer (logP > -5): {emerge_layer}")
-    print(f"  Saved → {out_path}")
+    print(f"  Saved -> {out_path}")
 
     # Free GPU.
     del model

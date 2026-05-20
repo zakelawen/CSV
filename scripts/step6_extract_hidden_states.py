@@ -2,8 +2,8 @@
 # Step 6: Extract Hidden States from LLMs
 
 # For each sample in train.json / eval.json, construct two inputs:
-#   - (query, relevant_doc)   → label "relevant"
-#   - (query, distracting_doc) → label "distracting"
+#   - (query, relevant_doc)   -> label "relevant"
+#   - (query, distracting_doc) -> label "distracting"
 
 # Run a forward pass through the base LLM with output_hidden_states=True,
 # extract the last token's hidden state at every layer, and save to disk.
@@ -27,14 +27,14 @@
 
 # Layer indexing convention (important for downstream steps):
 #     output.hidden_states returns num_layers+1 tensors:
-#       index 0         → embedding layer output
-#       index 1 .. N    → transformer layer 1 .. N output
-#       index -1 (= N)  → final transformer layer output
+#       index 0         -> embedding layer output
+#       index 1 .. N    -> transformer layer 1 .. N output
+#       index -1 (= N)  -> final transformer layer output
 
 #     TSV code uses two different indexing schemes:
 #       - add_tsv_layers() uses str_layer based on model.layers (0-based transformer layers)
-#         → str_layer=9 means the 10th transformer layer
-#         → corresponds to hidden_states[10] in output.hidden_states
+#         -> str_layer=9 means the 10th transformer layer
+#         -> corresponds to hidden_states[10] in output.hidden_states
 #       - train_model()/test_model() uses layer_number=-1 for the final layer
 
 #     We save ALL layers (embedding + transformer) to keep maximum flexibility.
@@ -196,11 +196,11 @@
 #         if pct > 0.05:
 #             raise RuntimeError(
 #                 f"{truncated_count} prompts ({pct*100:.1f}%) exceed max_length={max_length}. "
-#                 f"This is too many — increase --max_length or check your data. "
+#                 f"This is too many - increase --max_length or check your data. "
 #                 f"Max observed length: {int(lengths_tensor.max())} tokens."
 #             )
 #         else:
-#             print(f"    ⚠ WARNING: {truncated_count} prompts will be truncated. "
+#             print(f"    WARNING WARNING: {truncated_count} prompts will be truncated. "
 #                   f"These samples' last-token hidden states may not be meaningful. "
 #                   f"Consider increasing --max_length.")
 
@@ -233,7 +233,7 @@
 #     We call model.model() (the inner transformer, e.g. Gemma2Model or
 #     LlamaModel) instead of model() (Gemma2ForCausalLM) to skip the
 #     lm_head projection. This avoids allocating a huge
-#     [batch × seq_len × vocab_size] logits tensor, saving significant VRAM.
+#     [batch x seq_len x vocab_size] logits tensor, saving significant VRAM.
 
 #     Returns:
 #         Tensor of shape [N, L, D]
@@ -273,7 +273,7 @@
 #         # So the last token is always at position -1 for all sequences.
 #         hidden_states = outputs.hidden_states
 
-#         # Gather last-token hidden state for every layer → [B, L, D]
+#         # Gather last-token hidden state for every layer -> [B, L, D]
 #         layer_reps = []
 #         for layer_h in hidden_states:
 #             # layer_h: [B, seq_len, D]
@@ -304,7 +304,7 @@
 #     If cosine similarity < 0.9999 at any layer, something is wrong with
 #     the model's handling of left-padding + attention_mask.
 #     """
-#     print("\n  Running left-padding sanity check …")
+#     print("\n  Running left-padding sanity check ...")
 
 #     device = next(model.parameters()).device
 
@@ -322,7 +322,7 @@
 #         mask = enc["attention_mask"].to(device)
 #         with torch.amp.autocast("cuda", dtype=torch.float16):
 #             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-#         # batch_size=1, no padding → last token is at position -1
+#         # batch_size=1, no padding -> last token is at position -1
 #         reps = [h[:, -1, :].cpu().float() for h in out.hidden_states]
 #         return torch.cat(reps, dim=0)  # [L, D]
 
@@ -333,7 +333,7 @@
 #         mask = enc["attention_mask"].to(device)
 #         with torch.amp.autocast("cuda", dtype=torch.float16):
 #             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-#         # left padding → last token at position -1 for all sequences
+#         # left padding -> last token at position -1 for all sequences
 #         reps_per_sample = []
 #         for sample_idx in range(len(texts)):
 #             reps = [h[sample_idx, -1, :].cpu().float() for h in out.hidden_states]
@@ -372,7 +372,7 @@
 #             f"Consider switching to right-padding with explicit last-token indexing."
 #         )
 
-#     print("    ✓ Left-padding sanity check passed.")
+#     print("    OK Left-padding sanity check passed.")
 
 
 # # ---------------------------------------------------------------------------
@@ -393,7 +393,7 @@
 #     print(f"{'='*60}")
 
 #     # ---- Load tokenizer ----
-#     print("Loading tokenizer …")
+#     print("Loading tokenizer ...")
 #     tokenizer = AutoTokenizer.from_pretrained(hf_name)
 
 #     # --- Pad token setup ---
@@ -405,7 +405,7 @@
 #     # into those positions, potentially contaminating hidden states.
 #     #
 #     # Adding a new token with a random embedding is safe because:
-#     # 1. attention_mask=0 for pad positions → model ignores them in attention
+#     # 1. attention_mask=0 for pad positions -> model ignores them in attention
 #     # 2. We never read hidden states at pad positions
 #     if tokenizer.pad_token is None:
 #         tokenizer.add_special_tokens({"pad_token": "[PAD]"})
@@ -415,7 +415,7 @@
 #     tokenizer.padding_side = "left"
 
 #     # ---- Load model ----
-#     print("Loading model …")
+#     print("Loading model ...")
 #     model = AutoModelForCausalLM.from_pretrained(
 #         hf_name,
 #         dtype=torch.float16,
@@ -451,7 +451,7 @@
 
 #         data = load_split(split)
 #         prompts, labels, sources, questions = prepare_inputs(data)
-#         print(f"  Split={split}: {len(data)} samples → {len(prompts)} forward passes")
+#         print(f"  Split={split}: {len(data)} samples -> {len(prompts)} forward passes")
 
 #         # Check for truncation before running expensive forward passes
 #         check_truncation(tokenizer, prompts, max_length)
@@ -479,7 +479,7 @@
 #         }
 #         torch.save(payload, out_path)
 #         size_mb = out_path.stat().st_size / (1024 * 1024)
-#         print(f"  Saved → {out_path}  ({size_mb:.0f} MB)")
+#         print(f"  Saved -> {out_path}  ({size_mb:.0f} MB)")
 
 #     # ---- Free GPU memory before next model ----
 #     del model
@@ -532,8 +532,8 @@
 Step 6: Extract Hidden States from LLMs
 
 For each sample in train.json / eval.json, construct two inputs:
-  - (query, relevant_doc)   → label "relevant"
-  - (query, distracting_doc) → label "distracting"
+  - (query, relevant_doc)   -> label "relevant"
+  - (query, distracting_doc) -> label "distracting"
 
 Run a forward pass through the base LLM with output_hidden_states=True,
 extract the last token's hidden state at every layer, and save to disk.
@@ -558,14 +558,14 @@ Each .pt file contains:
 
 Layer indexing convention (important for downstream steps):
     output.hidden_states returns num_layers+1 tensors:
-      index 0         → embedding layer output
-      index 1 .. N    → transformer layer 1 .. N output
-      index -1 (= N)  → final transformer layer output
+      index 0         -> embedding layer output
+      index 1 .. N    -> transformer layer 1 .. N output
+      index -1 (= N)  -> final transformer layer output
 
     TSV code uses two different indexing schemes:
       - add_tsv_layers() uses str_layer based on model.layers (0-based transformer layers)
-        → str_layer=9 means the 10th transformer layer
-        → corresponds to hidden_states[10] in output.hidden_states
+        -> str_layer=9 means the 10th transformer layer
+        -> corresponds to hidden_states[10] in output.hidden_states
       - train_model()/test_model() uses layer_number=-1 for the final layer
 
     We save ALL layers (embedding + transformer) to keep maximum flexibility.
@@ -740,11 +740,11 @@ def check_truncation(tokenizer, prompts: list[str], max_length: int) -> int:
         if pct > 0.05:
             raise RuntimeError(
                 f"{truncated_count} prompts ({pct*100:.1f}%) exceed max_length={max_length}. "
-                f"This is too many — increase --max_length or check your data. "
+                f"This is too many - increase --max_length or check your data. "
                 f"Max observed length: {int(lengths_tensor.max())} tokens."
             )
         else:
-            print(f"    ⚠ WARNING: {truncated_count} prompts will be truncated. "
+            print(f"    WARNING WARNING: {truncated_count} prompts will be truncated. "
                   f"These samples' last-token hidden states may not be meaningful. "
                   f"Consider increasing --max_length.")
 
@@ -777,7 +777,7 @@ def extract_hidden_states(
     We call model.model() (the inner transformer, e.g. Gemma2Model or
     LlamaModel) instead of model() (Gemma2ForCausalLM) to skip the
     lm_head projection. This avoids allocating a huge
-    [batch × seq_len × vocab_size] logits tensor, saving significant VRAM.
+    [batch x seq_len x vocab_size] logits tensor, saving significant VRAM.
 
     Returns:
         Tensor of shape [N, L, D]
@@ -817,7 +817,7 @@ def extract_hidden_states(
         # So the last token is always at position -1 for all sequences.
         hidden_states = outputs.hidden_states
 
-        # Gather last-token hidden state for every layer → [B, L, D]
+        # Gather last-token hidden state for every layer -> [B, L, D]
         layer_reps = []
         for layer_h in hidden_states:
             # layer_h: [B, seq_len, D]
@@ -848,7 +848,7 @@ def _run_padding_sanity_check(model, tokenizer, max_length: int):
     If cosine similarity < 0.9999 at any layer, something is wrong with
     the model's handling of left-padding + attention_mask.
     """
-    print("\n  Running left-padding sanity check …")
+    print("\n  Running left-padding sanity check ...")
 
     device = next(model.parameters()).device
 
@@ -866,7 +866,7 @@ def _run_padding_sanity_check(model, tokenizer, max_length: int):
         mask = enc["attention_mask"].to(device)
         with torch.amp.autocast("cuda", dtype=torch.float16):
             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-        # batch_size=1, no padding → last token is at position -1
+        # batch_size=1, no padding -> last token is at position -1
         reps = [h[:, -1, :].cpu().float() for h in out.hidden_states]
         return torch.cat(reps, dim=0)  # [L, D]
 
@@ -877,7 +877,7 @@ def _run_padding_sanity_check(model, tokenizer, max_length: int):
         mask = enc["attention_mask"].to(device)
         with torch.amp.autocast("cuda", dtype=torch.float16):
             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-        # left padding → last token at position -1 for all sequences
+        # left padding -> last token at position -1 for all sequences
         reps_per_sample = []
         for sample_idx in range(len(texts)):
             reps = [h[sample_idx, -1, :].cpu().float() for h in out.hidden_states]
@@ -916,7 +916,7 @@ def _run_padding_sanity_check(model, tokenizer, max_length: int):
             f"Consider switching to right-padding with explicit last-token indexing."
         )
 
-    print("    ✓ Left-padding sanity check passed.")
+    print("    OK Left-padding sanity check passed.")
 
 
 # ---------------------------------------------------------------------------
@@ -937,7 +937,7 @@ def process_model(model_key: str, batch_size: int, max_length: int):
     print(f"{'='*60}")
 
     # ---- Load tokenizer ----
-    print("Loading tokenizer …")
+    print("Loading tokenizer ...")
     tokenizer = AutoTokenizer.from_pretrained(hf_name)
 
     # --- Pad token setup ---
@@ -949,7 +949,7 @@ def process_model(model_key: str, batch_size: int, max_length: int):
     # into those positions, potentially contaminating hidden states.
     #
     # Adding a new token with a random embedding is safe because:
-    # 1. attention_mask=0 for pad positions → model ignores them in attention
+    # 1. attention_mask=0 for pad positions -> model ignores them in attention
     # 2. We never read hidden states at pad positions
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "[PAD]"})
@@ -959,7 +959,7 @@ def process_model(model_key: str, batch_size: int, max_length: int):
     tokenizer.padding_side = "left"
 
     # ---- Load model ----
-    print("Loading model …")
+    print("Loading model ...")
     model = AutoModelForCausalLM.from_pretrained(
         hf_name,
         dtype=torch.float16,
@@ -995,7 +995,7 @@ def process_model(model_key: str, batch_size: int, max_length: int):
 
         data = load_split(split)
         prompts, labels, sources, questions = prepare_inputs(data)
-        print(f"  Split={split}: {len(data)} samples → {len(prompts)} forward passes")
+        print(f"  Split={split}: {len(data)} samples -> {len(prompts)} forward passes")
 
         # Check for truncation before running expensive forward passes
         check_truncation(tokenizer, prompts, max_length)
@@ -1023,7 +1023,7 @@ def process_model(model_key: str, batch_size: int, max_length: int):
         }
         torch.save(payload, out_path)
         size_mb = out_path.stat().st_size / (1024 * 1024)
-        print(f"  Saved → {out_path}  ({size_mb:.0f} MB)")
+        print(f"  Saved -> {out_path}  ({size_mb:.0f} MB)")
 
     # ---- Free GPU memory before next model ----
     del model

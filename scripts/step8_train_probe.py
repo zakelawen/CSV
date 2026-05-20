@@ -6,7 +6,7 @@
 
 # Pipeline per layer:
 #   1. Extract layer's hidden states from train/eval .pt files
-#   2. PCA → 16 dimensions
+#   2. PCA -> 16 dimensions
 #   3. L2 normalize
 #   4. Train logistic regression (single run, full training set)
 
@@ -116,7 +116,7 @@
 #         print(f"  [skip] Hidden states not found for {model_key}. Run step6 first.")
 #         return
 
-#     print(f"\nProcessing {model_key} …")
+#     print(f"\nProcessing {model_key} ...")
 
 #     train_data = torch.load(train_path, map_location="cpu", weights_only=False)
 #     eval_data = torch.load(eval_path, map_location="cpu", weights_only=False)
@@ -147,7 +147,7 @@
 #         "eval_mask": np.ones(eval_hs.shape[0], dtype=bool),
 #     }
 
-#     # Results: layer → subset → metrics
+#     # Results: layer -> subset -> metrics
 #     all_results = {}
 
 #     for layer_idx in range(L):
@@ -176,7 +176,7 @@
 #     results_path = RESULTS_DIR / f"{model_key}_probe_results.json"
 #     with open(results_path, "w") as f:
 #         json.dump(all_results, f, indent=2)
-#     print(f"\n  Saved results → {results_path}")
+#     print(f"\n  Saved results -> {results_path}")
 
 #     # --- Find best layer ---
 #     best_layer = None
@@ -201,7 +201,7 @@
 #     ax.axhline(0.5, color="gray", linestyle=":", linewidth=0.8, label="chance")
 #     ax.set_xlabel("Layer Index (0=embedding, 1..N=transformer layers)")
 #     ax.set_ylabel("AUROC")
-#     ax.set_title(f"{model_key} — Linear Probe AUROC by Layer")
+#     ax.set_title(f"{model_key} - Linear Probe AUROC by Layer")
 #     ax.legend(fontsize=9)
 #     ax.grid(True, alpha=0.3)
 #     plt.tight_layout()
@@ -209,7 +209,7 @@
 #     fig_path = RESULTS_DIR / f"{model_key}_auroc_by_layer.png"
 #     fig.savefig(fig_path, dpi=150)
 #     plt.close(fig)
-#     print(f"  Saved figure → {fig_path}")
+#     print(f"  Saved figure -> {fig_path}")
 
 
 # def main():
@@ -245,7 +245,7 @@ relevant vs. distracting documents. Three classifier families are run:
 
 Pipeline per layer:
   1. Extract layer's hidden states from train/eval .pt files
-  2. PCA → 16 dimensions (fit on train, transform both)
+  2. PCA -> 16 dimensions (fit on train, transform both)
   3. L2 normalize
   4. Fit each classifier on full training set, evaluate on eval set
 
@@ -326,7 +326,7 @@ def train_probe_single(
     pca_dim: int = PCA_DIM,
 ) -> dict:
     """
-    Train a single probe in (PCA → L2-normalize) space using the full
+    Train a single probe in (PCA -> L2-normalize) space using the full
     training set, evaluate on the eval set.
 
     Args:
@@ -341,7 +341,7 @@ def train_probe_single(
     train_pca = pca.fit_transform(train_hs)
     eval_pca = pca.transform(eval_hs)
 
-    # L2 normalize → cosine geometry
+    # L2 normalize -> cosine geometry
     train_norm = normalize(train_pca, norm="l2")
     eval_norm = normalize(eval_pca, norm="l2")
 
@@ -354,7 +354,7 @@ def train_probe_single(
         clf.fit(train_norm, train_labels)
         probs = clf.predict_proba(eval_norm)[:, 1]
         preds = clf.predict(eval_norm)
-        # Mean of |decision_function| — a relative confidence measure.
+        # Mean of |decision_function| - a relative confidence measure.
         margin = float(np.abs(clf.decision_function(eval_norm)).mean())
 
     elif classifier == "mlp":
@@ -398,7 +398,7 @@ def train_probe_single(
 
         # Build a continuous score:
         # signed distance gap (d_to_class0 - d_to_class1). Larger = farther
-        # from "distracting" centroid, closer to "relevant" → higher score
+        # from "distracting" centroid, closer to "relevant" -> higher score
         # for the positive class. Suitable for AUROC.
         probs = d0 - d1  # raw score for AUROC
         margin = float(np.abs(d0 - d1).mean())
@@ -445,7 +445,7 @@ def process_model(model_key: str, classifiers_to_run: list[str]):
         print(f"  [skip] Hidden states not found for {model_key}. Run step6 first.")
         return
 
-    print(f"\nProcessing {model_key} …")
+    print(f"\nProcessing {model_key} ...")
 
     train_data = torch.load(train_path, map_location="cpu", weights_only=False)
     eval_data = torch.load(eval_path, map_location="cpu", weights_only=False)
@@ -477,7 +477,7 @@ def process_model(model_key: str, classifiers_to_run: list[str]):
         "eval_mask": np.ones(eval_hs.shape[0], dtype=bool),
     }
 
-    # results: classifier → layer → subset → metrics
+    # results: classifier -> layer -> subset -> metrics
     all_results: dict[str, dict] = {clf: {} for clf in classifiers_to_run}
 
     for layer_idx in range(L):
@@ -512,7 +512,7 @@ def process_model(model_key: str, classifiers_to_run: list[str]):
         results_path = RESULTS_DIR / f"{model_key}_probe_results_{clf}.json"
         with open(results_path, "w") as f:
             json.dump(all_results[clf], f, indent=2)
-        print(f"  Saved → {results_path}")
+        print(f"  Saved -> {results_path}")
 
     # --- Find best layer per classifier on combined subset ---
     print("  Best layer (combined) per classifier:")
@@ -544,7 +544,7 @@ def process_model(model_key: str, classifiers_to_run: list[str]):
     ax.axhline(0.5, color="gray", linestyle=":", linewidth=0.8, label="chance")
     ax.set_xlabel("Layer Index (0=embedding, 1..N=transformer layers)")
     ax.set_ylabel("AUROC (combined)")
-    ax.set_title(f"{model_key} — Probe AUROC by Layer (combined subset)")
+    ax.set_title(f"{model_key} - Probe AUROC by Layer (combined subset)")
     ax.legend(fontsize=9)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
@@ -552,7 +552,7 @@ def process_model(model_key: str, classifiers_to_run: list[str]):
     fig_path = RESULTS_DIR / f"{model_key}_auroc_by_layer.png"
     fig.savefig(fig_path, dpi=150)
     plt.close(fig)
-    print(f"  Saved figure → {fig_path}")
+    print(f"  Saved figure -> {fig_path}")
 
 
 def main():

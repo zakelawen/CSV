@@ -194,7 +194,7 @@ def load_and_tokenize_retrieved(split: str, tokenizer) -> tuple[list, list[int]]
         source_counts[src] = source_counts.get(src, 0) + 1
 
     print(
-        f"  Loaded {split}: {len(data)} retrieved-doc samples → {len(prompts)} prompts"
+        f"  Loaded {split}: {len(data)} retrieved-doc samples -> {len(prompts)} prompts"
     )
     print(
         f"    labels: distracting={label_counts.get(0, 0)}  relevant={label_counts.get(1, 0)}"
@@ -300,11 +300,11 @@ def main():
     print(f"RESULTS:    {RESULTS_DIR}")
     print(f"Hyperparams: {hparams}")
 
-    print("\nSetting up tokenizer …")
+    print("\nSetting up tokenizer ...")
     tokenizer = base.setup_tokenizer(hf_name)
     pad_id = tokenizer.pad_token_id
 
-    print("\nLoading retrieved-doc data …")
+    print("\nLoading retrieved-doc data ...")
     train_prompts, train_labels = load_and_tokenize_retrieved("train", tokenizer)
     eval_prompts, eval_labels = load_and_tokenize_retrieved("eval", tokenizer)
 
@@ -417,7 +417,7 @@ def main():
         sweep_path = RESULTS_DIR / f"{run_name}_csv_sweep.json"
         with open(sweep_path, "w", encoding="utf-8") as f:
             json.dump(all_results, f, indent=2, ensure_ascii=False)
-        print(f"\nSaved retrieved sweep → {sweep_path}")
+        print(f"\nSaved retrieved sweep -> {sweep_path}")
 
         best_key = max(all_results, key=lambda k: all_results[k]["best_auroc"])
         print(

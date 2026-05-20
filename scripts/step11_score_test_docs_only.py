@@ -156,7 +156,7 @@ def main():
             "outputs": outputs,
         }, out_json)
 
-        print(f"Saved scores → {out_json}")
+        print(f"Saved scores -> {out_json}")
         print(json.dumps(summary, indent=2, ensure_ascii=False))
 
         all_summary_rows.append(summary)
@@ -168,7 +168,7 @@ def main():
         writer.writeheader()
         writer.writerows(all_summary_rows)
 
-    print(f"\nSaved summary CSV → {summary_csv}")
+    print(f"\nSaved summary CSV -> {summary_csv}")
 
 
 if __name__ == "__main__":

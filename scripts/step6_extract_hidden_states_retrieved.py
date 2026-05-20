@@ -161,7 +161,7 @@ def check_truncation(tokenizer, prompts: list[str], max_length: int) -> int:
                 f"Increase --max_length or inspect final_retrieved. Max observed length: "
                 f"{int(lengths_tensor.max())}."
             )
-        print("    ⚠ WARNING: a small number of prompts will be truncated.")
+        print("    WARNING WARNING: a small number of prompts will be truncated.")
     return truncated_count
 
 
@@ -198,7 +198,7 @@ def extract_hidden_states(model, tokenizer, prompts: list[str], batch_size: int,
 
 @torch.no_grad()
 def run_left_padding_sanity_check(model, tokenizer, max_length: int) -> None:
-    print("\n  Running left-padding sanity check …")
+    print("\n  Running left-padding sanity check ...")
     device = next(model.parameters()).device
     short_prompt = "Document: The sky is blue.\n\nQuestion: What color is the sky?\nAnswer:"
     long_prompt = (
@@ -235,7 +235,7 @@ def run_left_padding_sanity_check(model, tokenizer, max_length: int) -> None:
     print(f"    Long prompt:  min cosine similarity = {cos_long.min().item():.6f} (across {len(cos_long)} layers)")
     if cos_short.min().item() < 0.9999 or cos_long.min().item() < 0.9999:
         raise RuntimeError("Left-padding sanity check failed.")
-    print("    ✓ Left-padding sanity check passed.")
+    print("    OK Left-padding sanity check passed.")
 
 
 def process_model(model_key: str, batch_size: int, max_length: int, overwrite: bool) -> None:
@@ -250,7 +250,7 @@ def process_model(model_key: str, batch_size: int, max_length: int, overwrite: b
     print(f"Output dir: {save_dir}")
     print(f"{'='*70}")
 
-    print("Loading tokenizer …")
+    print("Loading tokenizer ...")
     tokenizer = AutoTokenizer.from_pretrained(hf_name)
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "[PAD]"})
@@ -259,7 +259,7 @@ def process_model(model_key: str, batch_size: int, max_length: int, overwrite: b
         print(f"  tokenizer.pad_token already set: {tokenizer.pad_token!r} (id={tokenizer.pad_token_id})")
     tokenizer.padding_side = "left"
 
-    print("Loading model …")
+    print("Loading model ...")
     model = AutoModelForCausalLM.from_pretrained(
         hf_name,
         torch_dtype=torch.float16,
@@ -284,7 +284,7 @@ def process_model(model_key: str, batch_size: int, max_length: int, overwrite: b
 
         data = load_split(split)
         prompts, labels, label_ids, sources, questions, answers = prepare_inputs(data)
-        print(f"  Split={split}: {len(data)} samples → {len(prompts)} forward passes")
+        print(f"  Split={split}: {len(data)} samples -> {len(prompts)} forward passes")
         check_truncation(tokenizer, prompts, max_length)
 
         hidden_states = extract_hidden_states(
@@ -312,7 +312,7 @@ def process_model(model_key: str, batch_size: int, max_length: int, overwrite: b
         }
         torch.save(payload, out_path)
         size_mb = out_path.stat().st_size / (1024 * 1024)
-        print(f"  Saved → {out_path} ({size_mb:.0f} MB)")
+        print(f"  Saved -> {out_path} ({size_mb:.0f} MB)")
 
     del model
     torch.cuda.empty_cache()

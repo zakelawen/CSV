@@ -1,31 +1,37 @@
 """
-Step 5: 为主实验准备测试集的检索结果
+Step 5: Prepare retrieved passages for the downstream QA test sets.
 
-输入: data/dpr_download/nq-test.csv, trivia-test.csv + FAISS 索引
-输出: data/final/test_retrieval_{nq,triviaqa}.json
+Inputs:
+  data/dpr_download/nq-test.csv
+  data/dpr_download/trivia-test.csv
+  data/dpr_download/wiki_dpr_nq/
+  data/dpr_download/wiki_dpr_nq.faiss
 
-前提: step2 已运行过（FAISS 索引和 wiki_dpr 数据已就绪）
+Outputs:
+  data/final/test_retrieval_{nq,triviaqa}.json
+
+Prerequisite: Step 2's DPR/FAISS resources must be available locally.
 """
+
+import csv
 import json
 import os
 import sys
-import csv
 
 from tqdm import tqdm
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from config import (
-    DPR_NQ_TEST, DPR_TRIVIA_TEST, FINAL_DIR, RETRIEVAL_TOP_K,
-)
+from config import DPR_NQ_TEST, DPR_TRIVIA_TEST, FINAL_DIR, RETRIEVAL_TOP_K
+
 
 TEST_QA_FILES = {
-    "nq":       DPR_NQ_TEST,
+    "nq": DPR_NQ_TEST,
     "triviaqa": DPR_TRIVIA_TEST,
 }
 
 
 def load_test_queries(path: str) -> list:
-    """加载 DPR 格式的测试集 CSV: question \\t answers"""
+    """Load a DPR-style test CSV with columns: question, answers."""
     queries = []
     with open(path, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter="\t")
@@ -40,37 +46,38 @@ def load_test_queries(path: str) -> list:
     return queries
 
 
-def main():
+def main() -> None:
     os.makedirs(FINAL_DIR, exist_ok=True)
 
-    # 复用 step2 的组件
-    from step2_retrieve import load_wiki_dpr, DPRRetriever
+    from step2_retrieve import DPRRetriever, load_wiki_dpr
 
     ds = load_wiki_dpr()
     retriever = DPRRetriever(ds)
 
     for dataset_name, qa_path in TEST_QA_FILES.items():
         if not os.path.exists(qa_path):
-            print(f"[跳过] 未找到 {qa_path}，请下载 DPR 测试集")
+            print(f"[skip] Missing {qa_path}. Download the DPR test set first.")
             continue
 
         queries = load_test_queries(qa_path)
-        print(f"[检索] {dataset_name} 测试集: {len(queries)} 条 query ...")
+        print(f"[retrieve] {dataset_name} test set: {len(queries)} queries ...")
 
         results = []
-        for item in tqdm(queries, desc=f"{dataset_name} 测试集检索"):
+        for item in tqdm(queries, desc=f"{dataset_name} test retrieval"):
             retrieved = retriever.retrieve(item["question"], top_k=RETRIEVAL_TOP_K)
-            results.append({
-                "question":      item["question"],
-                "answers":       item["answers"],
-                "retrieved_doc": retrieved[0],
-            })
+            results.append(
+                {
+                    "question": item["question"],
+                    "answers": item["answers"],
+                    "retrieved_doc": retrieved[0],
+                }
+            )
 
         out_path = os.path.join(FINAL_DIR, f"test_retrieval_{dataset_name}.json")
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
 
-        print(f"[完成] {len(results)} 条保存到 {out_path}")
+        print(f"[done] Saved {len(results)} records to {out_path}")
 
 
 if __name__ == "__main__":

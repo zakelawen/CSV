@@ -208,7 +208,7 @@ def inspect_batch(tokenizer, prompts, labels, prompt_indices, pad_id: int):
     )
 
     print("\n" + "#" * 100)
-    print("BATCH INSPECTION — exact output of collate_fn()")
+    print("BATCH INSPECTION - exact output of collate_fn()")
     print("#" * 100)
     print("prompt_indices:", prompt_indices)
     print("labels:", batch_labels)

@@ -366,7 +366,7 @@ def plot_model(
             ax.set_yticks([])
             ds_label = "NQ" if ds == "nq" else ds.upper()
             ax.set_title(
-                f"{ds_label} · {title}\n"
+                f"{ds_label}  -  {title}\n"
                 f"sil={metrics['silhouette']:.3f}, sep={metrics['separation_ratio']:.3f}",
                 fontsize=9,
             )

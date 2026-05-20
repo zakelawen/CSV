@@ -490,10 +490,10 @@ def load_base_model_and_tokenizer(model_name: str):
                 "to the correct snapshot directory, or edit MODEL_REGISTRY."
             )
 
-    print("  Loading tokenizer …")
+    print("  Loading tokenizer ...")
     tokenizer = setup_tokenizer(hf_name)
 
-    print("  Loading model …")
+    print("  Loading model ...")
     model = AutoModelForCausalLM.from_pretrained(
         hf_name,
         torch_dtype=torch.float16,
@@ -580,7 +580,7 @@ def prepare_eval_prompts(tokenizer):
         sources.append(src)
         questions.append(q)
 
-    print(f"  Loaded retrieved eval: {len(data)} samples → {len(prompts)} prompts")
+    print(f"  Loaded retrieved eval: {len(data)} samples -> {len(prompts)} prompts")
     return prompts, labels, sources, questions
 
 
@@ -731,7 +731,7 @@ def validate_csv_full_eval(
     PIPELINE_DIR.mkdir(parents=True, exist_ok=True)
     out_path = PIPELINE_DIR / f"{ckpt_info.csv_run_name}_csv_eval_validation.json"
     save_json(validation, out_path)
-    print(f"  Saved validation → {out_path}")
+    print(f"  Saved validation -> {out_path}")
 
     if diff > tolerance:
         raise RuntimeError(
@@ -739,7 +739,7 @@ def validate_csv_full_eval(
             f"{diff:.6f}, larger than tolerance={tolerance}."
         )
 
-    print("  ✓ CSV validation passed")
+    print("  OK CSV validation passed")
     return validation
 
 
@@ -1991,7 +1991,7 @@ def run_generation_for_dataset(
     )
     save_json(result_obj, out_path)
 
-    print(f"\n  Saved generation outputs → {out_path}")
+    print(f"\n  Saved generation outputs -> {out_path}")
     if csv_scores is None:
         print("  CSV skipped for baseline method")
     else:

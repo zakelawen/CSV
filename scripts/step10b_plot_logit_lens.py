@@ -8,12 +8,12 @@ Produces three figures per model:
      condition's answer probability mature".
 
   2. {model}_delta_by_layer.png
-     Two curves: ΔP_gold-no, ΔP_dis-no.
-     The peak of ΔP_gold-no is the recommended Step 11 contrastive
-     decoding layer. ΔP_dis-no should be ≤ 0.
+     Two curves: DeltaP_gold-no, DeltaP_dis-no.
+     The peak of DeltaP_gold-no is the recommended Step 11 contrastive
+     decoding layer. DeltaP_dis-no should be <= 0.
 
   3. {model}_logp_by_subset.png
-     Same as (1) but split into NQ vs TriviaQA panels — shows
+     Same as (1) but split into NQ vs TriviaQA panels - shows
      whether the gap behavior is dataset-dependent.
 
 Usage:
@@ -68,13 +68,13 @@ def plot_logp_by_layer(payload, model_key, out_path):
 
     ax.set_xlabel("Layer (0=embedding, 1..N=transformer)")
     ax.set_ylabel("Mean logP(answer span)")
-    ax.set_title(f"{model_key} — Logit Lens: answer logP across layers (combined)")
+    ax.set_title(f"{model_key} - Logit Lens: answer logP across layers (combined)")
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9, loc="lower right")
     plt.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
-    print(f"    Saved → {out_path}")
+    print(f"    Saved -> {out_path}")
 
 
 def plot_delta_by_layer(payload, model_key, out_path):
@@ -86,9 +86,9 @@ def plot_delta_by_layer(payload, model_key, out_path):
     delta_dis  = to_array(payload["delta_dis_minus_no"])
 
     ax.plot(layers, delta_gold, "-", linewidth=1.8, marker="o", markersize=3,
-            color="#2ca02c", label="ΔP_gold − no_ctx")
+            color="#2ca02c", label="DeltaP_gold - no_ctx")
     ax.plot(layers, delta_dis,  "-", linewidth=1.8, marker="o", markersize=3,
-            color="#d62728", label="ΔP_dis − no_ctx")
+            color="#d62728", label="DeltaP_dis - no_ctx")
 
     ax.axhline(0.0, color="black", linewidth=0.6, alpha=0.5)
 
@@ -97,21 +97,21 @@ def plot_delta_by_layer(payload, model_key, out_path):
     if peak_layer >= 0:
         ax.axvline(peak_layer, color="#2ca02c", linestyle=":", linewidth=1.0)
         ax.annotate(
-            f"peak ΔP_gold = {peak_val:+.3f}\nat layer {peak_layer}",
+            f"peak DeltaP_gold = {peak_val:+.3f}\nat layer {peak_layer}",
             xy=(peak_layer, peak_val),
             xytext=(8, -8), textcoords="offset points",
             fontsize=9, color="#2ca02c",
         )
 
     ax.set_xlabel("Layer (0=embedding, 1..N=transformer)")
-    ax.set_ylabel("Mean Δ logP")
-    ax.set_title(f"{model_key} — ΔlogP relative to no_ctx, per layer (combined)")
+    ax.set_ylabel("Mean Delta logP")
+    ax.set_title(f"{model_key} - DeltalogP relative to no_ctx, per layer (combined)")
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9, loc="best")
     plt.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
-    print(f"    Saved → {out_path}")
+    print(f"    Saved -> {out_path}")
 
 
 def plot_per_subset(payload, model_key, out_path):
@@ -131,11 +131,11 @@ def plot_per_subset(payload, model_key, out_path):
 
     axes[0].set_ylabel("Mean logP(answer span)")
     axes[0].legend(fontsize=8, loc="lower right")
-    fig.suptitle(f"{model_key} — Logit Lens by subset")
+    fig.suptitle(f"{model_key} - Logit Lens by subset")
     plt.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
-    print(f"    Saved → {out_path}")
+    print(f"    Saved -> {out_path}")
 
 
 def process_model(model_key):

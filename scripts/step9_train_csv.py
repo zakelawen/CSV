@@ -6,12 +6,12 @@
 #   Mode B (--cls_layer): Inject v at layer k, classify using transformer layer c (c > k).
 
 # All layer arguments use transformer layer indexing (0-based, matching model.layers).
-#   - str_layer=0  → first transformer layer
-#   - cls_layer=3  → fourth transformer layer (= hidden_states[4] internally)
-#   - cls_layer=-1 → final transformer layer (default)
+#   - str_layer=0  -> first transformer layer
+#   - cls_layer=3  -> fourth transformer layer (= hidden_states[4] internally)
+#   - cls_layer=-1 -> final transformer layer (default)
 
 # Padding strategy: RIGHT padding, matching the TSV original codebase. This is
-# deliberately different from Step 6 (which uses left padding) — TSV's design
+# deliberately different from Step 6 (which uses left padding) - TSV's design
 # puts v on every token position via `expand`, and right padding makes the
 # position_ids and RoPE behavior straightforward and consistent with the TSV
 # paper's experimental setup. A right-padding sanity check is run before
@@ -126,7 +126,7 @@
 
 #     LLaMA-3.1 has no default pad_token; we reuse eos_token as pad. Safe
 #     because (a) padding positions are masked via attention_mask=0,
-#     (b) right-padding puts pad after real tokens — pad embeddings never
+#     (b) right-padding puts pad after real tokens - pad embeddings never
 #     propagate into earlier-position hidden states under causal attention,
 #     (c) we extract the last-non-pad token, never a pad position.
 #     Gemma-2 already has pad_token=<pad> (id=0).
@@ -168,7 +168,7 @@
 #         prompts.append(tokens)
 #         labels.append(0)
 
-#     print(f"  Loaded {split}: {len(data)} samples → {len(prompts)} prompts")
+#     print(f"  Loaded {split}: {len(data)} samples -> {len(prompts)} prompts")
 #     return prompts, labels
 
 
@@ -191,7 +191,7 @@
 #     The TSV wrapper has not been applied yet, so this only validates
 #     that the underlying forward pass handles right-padding correctly.
 #     """
-#     print("\n  Running right-padding sanity check …")
+#     print("\n  Running right-padding sanity check ...")
 #     device = next(model.parameters()).device
 
 #     short_prompt = ("Document: The sky is blue.\n\n"
@@ -210,7 +210,7 @@
 #         mask = torch.ones_like(ids, dtype=torch.long)
 #         with torch.amp.autocast("cuda", dtype=torch.float16):
 #             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-#         # batch_size=1, no padding → last token at position -1
+#         # batch_size=1, no padding -> last token at position -1
 #         return torch.stack([h[0, -1, :].cpu().float() for h in out.hidden_states], dim=0)  # [L, D]
 
 #     # Build a batch with RIGHT padding (short padded to length of long)
@@ -261,7 +261,7 @@
 #             f"This model may not correctly handle right-padding. Investigate "
 #             f"transformers version or attention implementation before proceeding."
 #         )
-#     print("    ✓ Right-padding sanity check passed.")
+#     print("    OK Right-padding sanity check passed.")
 
 
 # # ---------------------------------------------------------------------------
@@ -419,7 +419,7 @@
 #             attention_mask = attention_mask.to(device)
 
 #             # Forward pass in fp16, using model.model (inner transformer)
-#             # to skip lm_head — saves a [B, seq_len, vocab_size] allocation
+#             # to skip lm_head - saves a [B, seq_len, vocab_size] allocation
 #             # which is ~64GB for LLaMA-3.1 at batch=128, seq=1024.
 #             with torch.amp.autocast("cuda", dtype=torch.float16):
 #                 output = model.model(
@@ -490,7 +490,7 @@
 #               f"eval_AUROC={auroc:.4f}  "
 #               f"eval_Acc={acc:.4f}  "
 #               f"eval_Margin={avg_margin:.4f}"
-#               + ("  ★ best" if is_best else ""))
+#               + ("  best best" if is_best else ""))
 
 #         if no_improve >= patience:
 #             print(f"    Early stop: no improvement for {patience} epochs")
@@ -512,7 +512,7 @@
 #         "model_name": model_name,
 #         "hf_name": hf_name,
 #     }, ckpt_path)
-#     print(f"    Saved checkpoint → {ckpt_path}")
+#     print(f"    Saved checkpoint -> {ckpt_path}")
 
 #     del model
 #     torch.cuda.empty_cache()
@@ -658,11 +658,11 @@
 #     print(f"Model: {model_key} ({hf_name})")
 #     print(f"Hyperparams: {hparams}")
 
-#     print("\nSetting up tokenizer …")
+#     print("\nSetting up tokenizer ...")
 #     tokenizer = setup_tokenizer(hf_name)
 #     pad_id = tokenizer.pad_token_id
 
-#     print("\nLoading data …")
+#     print("\nLoading data ...")
 #     train_prompts, train_labels = load_and_tokenize("train", tokenizer)
 #     eval_prompts, eval_labels = load_and_tokenize("eval", tokenizer)
 
@@ -735,7 +735,7 @@
 #                     print(f"  [resume warning] {result_path} is broken; rerunning {key}")
 
 #             # Run sanity check only on the first config that is actually trained
-#             # (it's model-level, not config-level — once is enough).
+#             # (it's model-level, not config-level - once is enough).
 #             run_sanity = first_config and not args.skip_sanity_check
 #             first_config = False
 
@@ -765,7 +765,7 @@
 #         sweep_path = RESULTS_DIR / f"{model_key}_csv_sweep.json"
 #         with open(sweep_path, "w") as f:
 #             json.dump(all_results, f, indent=2)
-#         print(f"\nSaved sweep → {sweep_path}")
+#         print(f"\nSaved sweep -> {sweep_path}")
 
 #         best_key = max(all_results, key=lambda k: all_results[k]["best_auroc"])
 #         print(
@@ -792,7 +792,7 @@
 #         ax.axhline(0.5, color="gray", linestyle=":", linewidth=0.8)
 #         ax.set_xlabel("Injection Layer (transformer layer index, 0-based)")
 #         ax.set_ylabel("Best AUROC")
-#         ax.set_title(f"{model_key} — CSV AUROC by Injection × Classification Layer")
+#         ax.set_title(f"{model_key} - CSV AUROC by Injection x Classification Layer")
 #         ax.legend(fontsize=9)
 #         ax.grid(True, alpha=0.3)
 #         plt.tight_layout()
@@ -800,7 +800,7 @@
 #         fig_path = RESULTS_DIR / f"{model_key}_csv_auroc_by_layer.png"
 #         fig.savefig(fig_path, dpi=150)
 #         plt.close(fig)
-#         print(f"Saved figure → {fig_path}")
+#         print(f"Saved figure -> {fig_path}")
 
 #     print("\nDone.")
 
@@ -817,12 +817,12 @@ Two modes:
   Mode B (--cls_layer): Inject v at layer k, classify using transformer layer c (c > k).
 
 All layer arguments use transformer layer indexing (0-based, matching model.layers).
-  - str_layer=0  → first transformer layer
-  - cls_layer=3  → fourth transformer layer (= hidden_states[4] internally)
-  - cls_layer=-1 → final transformer layer (default)
+  - str_layer=0  -> first transformer layer
+  - cls_layer=3  -> fourth transformer layer (= hidden_states[4] internally)
+  - cls_layer=-1 -> final transformer layer (default)
 
 Padding strategy: RIGHT padding, matching the TSV original codebase. This is
-deliberately different from Step 6 (which uses left padding) — TSV's design
+deliberately different from Step 6 (which uses left padding) - TSV's design
 puts v on every token position via `expand`, and right padding makes the
 position_ids and RoPE behavior straightforward and consistent with the TSV
 paper's experimental setup. A right-padding sanity check is run before
@@ -943,7 +943,7 @@ def setup_tokenizer(hf_name: str):
 
     LLaMA-3.1 has no default pad_token; we reuse eos_token as pad. Safe
     because (a) padding positions are masked via attention_mask=0,
-    (b) right-padding puts pad after real tokens — pad embeddings never
+    (b) right-padding puts pad after real tokens - pad embeddings never
     propagate into earlier-position hidden states under causal attention,
     (c) we extract the last-non-pad token, never a pad position.
     Gemma-2 already has pad_token=<pad> (id=0).
@@ -985,7 +985,7 @@ def load_and_tokenize(split: str, tokenizer) -> tuple:
         prompts.append(tokens)
         labels.append(0)
 
-    print(f"  Loaded {split}: {len(data)} samples → {len(prompts)} prompts")
+    print(f"  Loaded {split}: {len(data)} samples -> {len(prompts)} prompts")
     return prompts, labels
 
 
@@ -1008,7 +1008,7 @@ def run_padding_sanity_check(model, tokenizer, pad_id: int):
     The TSV wrapper has not been applied yet, so this only validates
     that the underlying forward pass handles right-padding correctly.
     """
-    print("\n  Running right-padding sanity check …")
+    print("\n  Running right-padding sanity check ...")
     device = next(model.parameters()).device
 
     short_prompt = ("Document: The sky is blue.\n\n"
@@ -1027,7 +1027,7 @@ def run_padding_sanity_check(model, tokenizer, pad_id: int):
         mask = torch.ones_like(ids, dtype=torch.long)
         with torch.amp.autocast("cuda", dtype=torch.float16):
             out = model.model(input_ids=ids, attention_mask=mask, output_hidden_states=True)
-        # batch_size=1, no padding → last token at position -1
+        # batch_size=1, no padding -> last token at position -1
         return torch.stack([h[0, -1, :].cpu().float() for h in out.hidden_states], dim=0)  # [L, D]
 
     # Build a batch with RIGHT padding (short padded to length of long)
@@ -1078,7 +1078,7 @@ def run_padding_sanity_check(model, tokenizer, pad_id: int):
             f"This model may not correctly handle right-padding. Investigate "
             f"transformers version or attention implementation before proceeding."
         )
-    print("    ✓ Right-padding sanity check passed.")
+    print("    OK Right-padding sanity check passed.")
 
 
 # ---------------------------------------------------------------------------
@@ -1236,7 +1236,7 @@ def train_single_config(
             attention_mask = attention_mask.to(device)
 
             # Forward pass in fp16, using model.model (inner transformer)
-            # to skip lm_head — saves a [B, seq_len, vocab_size] allocation
+            # to skip lm_head - saves a [B, seq_len, vocab_size] allocation
             # which is ~64GB for LLaMA-3.1 at batch=128, seq=1024.
             with torch.amp.autocast("cuda", dtype=torch.float16):
                 output = model.model(
@@ -1307,7 +1307,7 @@ def train_single_config(
               f"eval_AUROC={auroc:.4f}  "
               f"eval_Acc={acc:.4f}  "
               f"eval_Margin={avg_margin:.4f}"
-              + ("  ★ best" if is_best else ""))
+              + ("  best best" if is_best else ""))
 
         if no_improve >= patience:
             print(f"    Early stop: no improvement for {patience} epochs")
@@ -1329,7 +1329,7 @@ def train_single_config(
         "model_name": model_name,
         "hf_name": hf_name,
     }, ckpt_path)
-    print(f"    Saved checkpoint → {ckpt_path}")
+    print(f"    Saved checkpoint -> {ckpt_path}")
 
     del model
     torch.cuda.empty_cache()
@@ -1475,11 +1475,11 @@ def main():
     print(f"Model: {model_key} ({hf_name})")
     print(f"Hyperparams: {hparams}")
 
-    print("\nSetting up tokenizer …")
+    print("\nSetting up tokenizer ...")
     tokenizer = setup_tokenizer(hf_name)
     pad_id = tokenizer.pad_token_id
 
-    print("\nLoading data …")
+    print("\nLoading data ...")
     train_prompts, train_labels = load_and_tokenize("train", tokenizer)
     eval_prompts, eval_labels = load_and_tokenize("eval", tokenizer)
 
@@ -1552,7 +1552,7 @@ def main():
                     print(f"  [resume warning] {result_path} is broken; rerunning {key}")
 
             # Run sanity check only on the first config that is actually trained
-            # (it's model-level, not config-level — once is enough).
+            # (it's model-level, not config-level - once is enough).
             run_sanity = first_config and not args.skip_sanity_check
             first_config = False
 
@@ -1582,7 +1582,7 @@ def main():
         sweep_path = RESULTS_DIR / f"{model_key}_csv_sweep.json"
         with open(sweep_path, "w") as f:
             json.dump(all_results, f, indent=2)
-        print(f"\nSaved sweep → {sweep_path}")
+        print(f"\nSaved sweep -> {sweep_path}")
 
         best_key = max(all_results, key=lambda k: all_results[k]["best_auroc"])
         print(
@@ -1609,7 +1609,7 @@ def main():
         ax.axhline(0.5, color="gray", linestyle=":", linewidth=0.8)
         ax.set_xlabel("Injection Layer (transformer layer index, 0-based)")
         ax.set_ylabel("Best AUROC")
-        ax.set_title(f"{model_key} — CSV AUROC by Injection × Classification Layer")
+        ax.set_title(f"{model_key} - CSV AUROC by Injection x Classification Layer")
         ax.legend(fontsize=9)
         ax.grid(True, alpha=0.3)
         plt.tight_layout()
@@ -1617,7 +1617,7 @@ def main():
         fig_path = RESULTS_DIR / f"{model_key}_csv_auroc_by_layer.png"
         fig.savefig(fig_path, dpi=150)
         plt.close(fig)
-        print(f"Saved figure → {fig_path}")
+        print(f"Saved figure -> {fig_path}")
 
     print("\nDone.")
 

@@ -5,7 +5,7 @@
 # at each layer. This validates the von Mises-Fisher (vMF) modeling assumption
 # used in CSV training (Step 9).
 
-# Reference: TSV paper Appendix G — LLaMA-3.1-8B norms ~140, Qwen-2.5-7B ~300-330.
+# Reference: TSV paper Appendix G - LLaMA-3.1-8B norms ~140, Qwen-2.5-7B ~300-330.
 
 # Usage:
 #     python scripts/step6b_verify_norms.py --model gemma2b
@@ -50,7 +50,7 @@
 #         print(f"  [skip] {hs_path} not found. Run step6 first.")
 #         return
 
-#     print(f"\nProcessing {model_key} …")
+#     print(f"\nProcessing {model_key} ...")
 #     data = torch.load(hs_path, map_location="cpu", weights_only=False)
 #     hidden_states = data["hidden_states"]  # [N, L, D]
 #     N, L, D = hidden_states.shape
@@ -86,7 +86,7 @@
 #         std_val = layer_norms.std()
 #         cv = std_val / mean_val if mean_val > 0 else float("inf")
 #         ax.axvline(mean_val, color="red", linestyle="--", linewidth=1.5)
-#         ax.text(0.95, 0.95, f"μ={mean_val:.1f}\nσ={std_val:.1f}\nCV={cv:.3f}",
+#         ax.text(0.95, 0.95, f"mu={mean_val:.1f}\nsigma={std_val:.1f}\nCV={cv:.3f}",
 #                 transform=ax.transAxes, ha="right", va="top", fontsize=9,
 #                 bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5))
 
@@ -94,13 +94,13 @@
 #     for idx in range(len(layer_indices), len(axes)):
 #         axes[idx].set_visible(False)
 
-#     fig.suptitle(f"{model_key} — L2 Norm Distributions per Layer", fontsize=14)
+#     fig.suptitle(f"{model_key} - L2 Norm Distributions per Layer", fontsize=14)
 #     plt.tight_layout()
 
 #     fig_path = RESULTS_DIR / f"{model_key}_norm_distributions.png"
 #     fig.savefig(fig_path, dpi=150)
 #     plt.close(fig)
-#     print(f"  Saved figure → {fig_path}")
+#     print(f"  Saved figure -> {fig_path}")
 
 #     # --- Compute stats for ALL layers and save ---
 #     stats = {}
@@ -117,7 +117,7 @@
 #     stats_path = RESULTS_DIR / f"{model_key}_norm_stats.json"
 #     with open(stats_path, "w") as f:
 #         json.dump(stats, f, indent=2)
-#     print(f"  Saved stats → {stats_path}")
+#     print(f"  Saved stats -> {stats_path}")
 
 #     # --- Summary: check ALL layers ---
 #     warning_layers = []
@@ -131,12 +131,12 @@
 #           f"mean={final_stats['mean']:.1f}, std={final_stats['std']:.1f}, CV={final_stats['cv']:.4f}")
 
 #     if warning_layers:
-#         print(f"  ⚠ {len(warning_layers)} layer(s) have CV >= 0.1 (norm not concentrated):")
+#         print(f"  WARNING {len(warning_layers)} layer(s) have CV >= 0.1 (norm not concentrated):")
 #         for li, cv in warning_layers:
 #             print(f"      layer {li}: CV={cv:.4f}")
 #         print(f"    If CSV is trained on these layers, consider explicit L2 normalization.")
 #     else:
-#         print(f"  ✓ All {L} layers have CV < 0.1 — vMF modeling is appropriate at every layer.")
+#         print(f"  OK All {L} layers have CV < 0.1 - vMF modeling is appropriate at every layer.")
 
 
 # def main():
@@ -162,7 +162,7 @@ Check whether the L2 norms of last-token hidden states are concentrated
 at each layer. This validates the von Mises-Fisher (vMF) modeling assumption
 used in CSV training (Step 9).
 
-Reference: TSV paper Appendix G — LLaMA-3.1-8B norms ~140, Qwen-2.5-7B ~300-330.
+Reference: TSV paper Appendix G - LLaMA-3.1-8B norms ~140, Qwen-2.5-7B ~300-330.
 
 Usage:
     python scripts/step6b_verify_norms.py --model gemma2b
@@ -208,7 +208,7 @@ def process_model(model_key: str):
         print(f"  [skip] {hs_path} not found. Run step6 first.")
         return
 
-    print(f"\nProcessing {model_key} …")
+    print(f"\nProcessing {model_key} ...")
     data = torch.load(hs_path, map_location="cpu", weights_only=False)
     hidden_states = data["hidden_states"]  # [N, L, D]
     N, L, D = hidden_states.shape
@@ -244,7 +244,7 @@ def process_model(model_key: str):
         std_val = layer_norms.std()
         cv = std_val / mean_val if mean_val > 0 else float("inf")
         ax.axvline(mean_val, color="red", linestyle="--", linewidth=1.5)
-        ax.text(0.95, 0.95, f"μ={mean_val:.1f}\nσ={std_val:.1f}\nCV={cv:.3f}",
+        ax.text(0.95, 0.95, f"mu={mean_val:.1f}\nsigma={std_val:.1f}\nCV={cv:.3f}",
                 transform=ax.transAxes, ha="right", va="top", fontsize=9,
                 bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5))
 
@@ -252,13 +252,13 @@ def process_model(model_key: str):
     for idx in range(len(layer_indices), len(axes)):
         axes[idx].set_visible(False)
 
-    fig.suptitle(f"{model_key} — L2 Norm Distributions per Layer", fontsize=14)
+    fig.suptitle(f"{model_key} - L2 Norm Distributions per Layer", fontsize=14)
     plt.tight_layout()
 
     fig_path = RESULTS_DIR / f"{model_key}_norm_distributions.png"
     fig.savefig(fig_path, dpi=150)
     plt.close(fig)
-    print(f"  Saved figure → {fig_path}")
+    print(f"  Saved figure -> {fig_path}")
 
     # --- Compute stats for ALL layers and save ---
     stats = {}
@@ -275,7 +275,7 @@ def process_model(model_key: str):
     stats_path = RESULTS_DIR / f"{model_key}_norm_stats.json"
     with open(stats_path, "w") as f:
         json.dump(stats, f, indent=2)
-    print(f"  Saved stats → {stats_path}")
+    print(f"  Saved stats -> {stats_path}")
 
     # --- Summary: check ALL layers ---
     warning_layers = []
@@ -289,12 +289,12 @@ def process_model(model_key: str):
           f"mean={final_stats['mean']:.1f}, std={final_stats['std']:.1f}, CV={final_stats['cv']:.4f}")
 
     if warning_layers:
-        print(f"  ⚠ {len(warning_layers)} layer(s) have CV >= 0.1 (norm not concentrated):")
+        print(f"  WARNING {len(warning_layers)} layer(s) have CV >= 0.1 (norm not concentrated):")
         for li, cv in warning_layers:
             print(f"      layer {li}: CV={cv:.4f}")
         print(f"    If CSV is trained on these layers, consider explicit L2 normalization.")
     else:
-        print(f"  ✓ All {L} layers have CV < 0.1 — vMF modeling is appropriate at every layer.")
+        print(f"  OK All {L} layers have CV < 0.1 - vMF modeling is appropriate at every layer.")
 
 
 def main():

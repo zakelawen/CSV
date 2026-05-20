@@ -126,13 +126,13 @@ def load_eval_with_sources(tokenizer):
         labels.append(0)
         sources.append(src)
 
-    print(f"  Loaded eval: {len(data)} samples → {len(prompts)} prompts")
+    print(f"  Loaded eval: {len(data)} samples -> {len(prompts)} prompts")
     print(f"  Sources: {dict((s, sources.count(s)) for s in set(sources))}")
     return prompts, labels, sources
 
 
 # ---------------------------------------------------------------------------
-# Eval forward — same logic as step9.evaluate, but returns per-prompt scores
+# Eval forward - same logic as step9.evaluate, but returns per-prompt scores
 # ---------------------------------------------------------------------------
 
 @torch.no_grad()
@@ -140,7 +140,7 @@ def compute_scores_all(model, centroids, prompts, labels, device,
                        batch_size, cls_layer, cos_temp, pad_id):
     """
     Run forward on all eval prompts, return per-prompt:
-        scores  P(relevant) ∈ [0, 1]
+        scores  P(relevant) in [0, 1]
         preds   argmax (0 or 1)
         margins |logit_1 - logit_0|
 
@@ -276,11 +276,11 @@ def reeval_one_model(model_name: str, ckpt_path: Path | None,
     print(f"  hf_name: {hf_name}")
 
     # --- Load tokenizer + model exactly as Step 9 does ---
-    print("  Loading tokenizer …")
+    print("  Loading tokenizer ...")
     tokenizer = setup_tokenizer(hf_name)
     pad_id = tokenizer.pad_token_id
 
-    print("  Loading model …")
+    print("  Loading model ...")
     model = AutoModelForCausalLM.from_pretrained(
         hf_name,
         dtype=torch.float16,
@@ -300,11 +300,11 @@ def reeval_one_model(model_name: str, ckpt_path: Path | None,
     centroids_dev = centroids.to(device)
 
     # --- Load eval data with source labels ---
-    print("  Loading eval data …")
+    print("  Loading eval data ...")
     prompts, labels, sources = load_eval_with_sources(tokenizer)
 
     # --- Forward all of eval, collect per-prompt scores ---
-    print("  Forwarding eval …")
+    print("  Forwarding eval ...")
     scores, preds, labels_arr, margins = compute_scores_all(
         model, centroids_dev,
         prompts, labels, device,
@@ -342,10 +342,10 @@ def reeval_one_model(model_name: str, ckpt_path: Path | None,
     saved_best = float(ckpt["best_auroc"])
     diff = abs(out["combined"]["auroc"] - saved_best)
     if diff > 1e-3:
-        print(f"\n  ⚠ combined AUROC ({out['combined']['auroc']:.4f}) "
+        print(f"\n  WARNING combined AUROC ({out['combined']['auroc']:.4f}) "
               f"differs from saved best_auroc ({saved_best:.4f}) by {diff:.4f}")
     else:
-        print(f"\n  ✓ combined AUROC matches saved best_auroc "
+        print(f"\n  OK combined AUROC matches saved best_auroc "
               f"(diff={diff:.5f})")
 
     # --- Save ---
@@ -364,7 +364,7 @@ def reeval_one_model(model_name: str, ckpt_path: Path | None,
     }
     with open(save_path, "w") as f:
         json.dump(payload, f, indent=2)
-    print(f"\n  Saved → {save_path}")
+    print(f"\n  Saved -> {save_path}")
 
     # Free GPU
     del model

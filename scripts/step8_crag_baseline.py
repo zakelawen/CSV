@@ -6,7 +6,7 @@ retrieved documents as relevant vs. distracting. This serves as a baseline
 to compare against the linear probe approach.
 
 The evaluator takes "question [SEP] passage" as input and outputs a scalar score.
-Score > threshold → relevant, otherwise → distracting.
+Score > threshold -> relevant, otherwise -> distracting.
 
 Modes:
   retrieved:
@@ -299,7 +299,7 @@ def main():
     }
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2)
-    print(f"\nSaved results → {out_path}")
+    print(f"\nSaved results -> {out_path}")
 
 
 if __name__ == "__main__":

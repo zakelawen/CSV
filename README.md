@@ -1,11 +1,10 @@
 # Context Separator Vector for RAG Document Utility
 
-This is an anonymous review release for reproducing the code path behind a
-retrieved-document utility classifier for retrieval-augmented generation (RAG).
-The project studies whether a frozen LLM's hidden states can distinguish
-answer-supporting retrieved documents from distracting ones, and whether that
-signal can be used as a lightweight gate for existing RAG and contrastive
-decoding methods.
+This repository contains the code and experiment notes for a retrieved-document
+utility classifier for retrieval-augmented generation (RAG). The project studies
+whether a frozen LLM's hidden states can distinguish answer-supporting retrieved
+documents from distracting ones, and whether that signal can be used as a
+lightweight gate for existing RAG and contrastive decoding methods.
 
 The main method is a **Context Separator Vector (CSV)**. CSV learns a small
 steering vector in a frozen LLM. No target LLM weights are fine-tuned.
@@ -33,6 +32,9 @@ scripts/      Dataset construction, hidden-state extraction, baselines, CSV
               training, generation, evaluation, and analysis scripts
 third_party/  Local helper code for DoLA generation
 PLAN.md       Full experiment ledger and source-of-truth result mapping
+RUN_COMMANDS.md
+              Compact command checklist for the main experiments
+EMNLP2026.pdf Optional paper draft snapshot
 requirements.txt
 .env.example
 ```
@@ -306,7 +308,7 @@ The gated methods use the retrieved-document CSV classifier before generation.
 `tau` is the utility threshold; the experiment ledger records runs for
 `tau in {0.5, 0.4, 0.3}`.
 
-## Practical Notes for Reviewers
+## Practical Notes
 
 - Full reproduction is GPU-heavy. The most expensive stages are hidden-state
   extraction, CSV sweeps, and pipeline generation.
@@ -321,4 +323,4 @@ The gated methods use the retrieved-document CSV classifier before generation.
 
 ## Citation
 
-Citation information will be added after the anonymous review period.
+Citation information will be added with the accompanying paper.

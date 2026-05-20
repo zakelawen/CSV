@@ -393,10 +393,10 @@ def process_model(
         if v is None:
             print(f"    retrieved_{subset:10s}: n={n} logP=None")
         else:
-            print(f"    retrieved_{subset:10s}: n={n} logP={v:.4f}  P≈{np.exp(v):.4f}")
-    print(f"  ΔP_relevant-no   peak: layer {peak_layer}, value = {peak_value:+.4f}")
+            print(f"    retrieved_{subset:10s}: n={n} logP={v:.4f}  P~{np.exp(v):.4f}")
+    print(f"  DeltaP_relevant-no   peak: layer {peak_layer}, value = {peak_value:+.4f}")
     print(
-        f"  ΔP_irrelevant-no peak: layer {irrelevant_peak_layer}, "
+        f"  DeltaP_irrelevant-no peak: layer {irrelevant_peak_layer}, "
         f"value = {irrelevant_peak_value:+.4f}"
     )
     print("  Top relevant layers:")

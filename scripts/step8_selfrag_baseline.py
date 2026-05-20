@@ -750,7 +750,7 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
-    print(f"\nSaved results → {out_path}")
+    print(f"\nSaved results -> {out_path}")
 
     # Explicit cleanup.
     del model

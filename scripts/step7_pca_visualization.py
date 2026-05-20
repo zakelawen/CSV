@@ -1,11 +1,11 @@
 # """
 # Step 7: PCA Visualization of Layer-wise Separability
 
-# For each model × dataset, perform PCA to 2D on the last-token hidden states
+# For each model x dataset, perform PCA to 2D on the last-token hidden states
 # at EVERY layer, colored by relevant / distracting.
 # Reproduces the style of Yeh & Li Figure 6 (layer-wise evolution).
 
-# This is QUALITATIVE analysis only — layer selection is done by Step 8 / Step 9.
+# This is QUALITATIVE analysis only - layer selection is done by Step 8 / Step 9.
 
 # Usage:
 #     python scripts/step7_pca_visualization.py --model gemma2b
@@ -13,7 +13,7 @@
 #     python scripts/step7_pca_visualization.py --model all
 
 # Output:
-#     results/pca/{model_key}_pca_{dataset}.png  (one figure per model × dataset)
+#     results/pca/{model_key}_pca_{dataset}.png  (one figure per model x dataset)
 # """
 
 # import argparse
@@ -49,7 +49,7 @@
 #         print(f"  [skip] {hs_path} not found. Run step6 first.")
 #         return
 
-#     print(f"\nProcessing {model_key} …")
+#     print(f"\nProcessing {model_key} ...")
 #     data = torch.load(hs_path, map_location="cpu", weights_only=False)
 #     hidden_states = data["hidden_states"]  # [N, L, D]
 #     labels = data["labels"]                # list of "relevant" / "distracting"
@@ -110,14 +110,14 @@
 #                    framealpha=0.9)
 
 #         ds_label = ds.upper() if ds != "unknown" else "All Data"
-#         fig.suptitle(f"{model_key} — {ds_label} — PCA All Layers (n={n_ds})",
+#         fig.suptitle(f"{model_key} - {ds_label} - PCA All Layers (n={n_ds})",
 #                      fontsize=13)
 #         plt.tight_layout(rect=[0, 0, 0.95, 0.95])
 
 #         fig_path = RESULTS_DIR / f"{model_key}_pca_{ds}.png"
 #         fig.savefig(fig_path, dpi=150)
 #         plt.close(fig)
-#         print(f"  Saved → {fig_path}")
+#         print(f"  Saved -> {fig_path}")
 
 
 # def main():
@@ -141,11 +141,11 @@
 """
 Step 7: PCA Visualization of Layer-wise Separability
 
-For each model × dataset, perform PCA to 2D on the last-token hidden states
+For each model x dataset, perform PCA to 2D on the last-token hidden states
 at EVERY layer, colored by relevant / distracting.
 Reproduces the style of Yeh & Li Figure 6 (layer-wise evolution).
 
-This is QUALITATIVE analysis only — layer selection is done by Step 8 / Step 9.
+This is QUALITATIVE analysis only - layer selection is done by Step 8 / Step 9.
 
 Usage:
     python scripts/step7_pca_visualization.py --model gemma2b
@@ -154,7 +154,7 @@ Usage:
     python scripts/step7_pca_visualization.py --model all
 
 Output:
-    results/pca/{model_key}_pca_{dataset}.png  (one figure per model × dataset)
+    results/pca/{model_key}_pca_{dataset}.png  (one figure per model x dataset)
 """
 
 import argparse
@@ -190,7 +190,7 @@ def process_model(model_key: str):
         print(f"  [skip] {hs_path} not found. Run step6 first.")
         return
 
-    print(f"\nProcessing {model_key} …")
+    print(f"\nProcessing {model_key} ...")
     data = torch.load(hs_path, map_location="cpu", weights_only=False)
     hidden_states = data["hidden_states"]  # [N, L, D]
     labels = data["labels"]                # list of "relevant" / "distracting"
@@ -251,14 +251,14 @@ def process_model(model_key: str):
                    framealpha=0.9)
 
         ds_label = ds.upper() if ds != "unknown" else "All Data"
-        fig.suptitle(f"{model_key} — {ds_label} — PCA All Layers (n={n_ds})",
+        fig.suptitle(f"{model_key} - {ds_label} - PCA All Layers (n={n_ds})",
                      fontsize=13)
         plt.tight_layout(rect=[0, 0, 0.95, 0.95])
 
         fig_path = RESULTS_DIR / f"{model_key}_pca_{ds}.png"
         fig.savefig(fig_path, dpi=150)
         plt.close(fig)
-        print(f"  Saved → {fig_path}")
+        print(f"  Saved -> {fig_path}")
 
 
 def main():

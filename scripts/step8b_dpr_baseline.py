@@ -2,7 +2,7 @@
 Step 8b: DPR baseline for gold-vs-distractor data.
 
 For each (question, doc, label) sample, compute:
-    score = DPR_q_encoder(question) · DPR_ctx_encoder(doc)
+    score = DPR_q_encoder(question)  -  DPR_ctx_encoder(doc)
 and use this raw similarity as the predicted score for binary classification.
 
 Important data note:
@@ -228,7 +228,7 @@ def process_split(split_path: Path,
     dis_docs = [extract_doc_text(s["distracting_doc"]) for s in samples]
     sources_per_pair = np.array([get_source_dataset(s) for s in samples])
 
-    print(f"  Encoding {len(samples)} questions ({split_path.name}) …")
+    print(f"  Encoding {len(samples)} questions ({split_path.name}) ...")
     q_emb = embed_texts(
         questions,
         q_tok,
@@ -239,7 +239,7 @@ def process_split(split_path: Path,
         desc="    questions",
     )
 
-    print(f"  Encoding {len(samples)} relevant docs …")
+    print(f"  Encoding {len(samples)} relevant docs ...")
     rel_emb = embed_texts(
         rel_docs,
         c_tok,
@@ -250,7 +250,7 @@ def process_split(split_path: Path,
         desc="    relevant docs",
     )
 
-    print(f"  Encoding {len(samples)} distracting docs …")
+    print(f"  Encoding {len(samples)} distracting docs ...")
     dis_emb = embed_texts(
         dis_docs,
         c_tok,
@@ -429,7 +429,7 @@ def main():
     print(f"Score source: DPR encoder {args.score_source} recomputed for both relevant_doc and distracting_doc")
 
     # Load encoders
-    print("\nLoading DPR encoders …")
+    print("\nLoading DPR encoders ...")
     q_tok = DPRQuestionEncoderTokenizerFast.from_pretrained(Q_ENCODER)
     q_enc = DPRQuestionEncoder.from_pretrained(Q_ENCODER).to(device).eval()
 
@@ -568,7 +568,7 @@ def main():
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2)
 
-    print(f"\nSaved → {out_path}")
+    print(f"\nSaved -> {out_path}")
 
 
 if __name__ == "__main__":

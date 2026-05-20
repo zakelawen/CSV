@@ -66,11 +66,4 @@ EMNLP2026/*.log
 EMNLP2026/*.out
 EMNLP2026/*.synctex.gz
 EMNLP2026/acl_latex.pdf
-EMNLP2026/文件版本/
-
-# Top-level reference PDFs
-/*.pdf
-
-# Local experiment command ledger; README.md contains the cleaned reviewer-facing
-# reproduction commands.
-/运行指令.md
+EMNLP2026/file_versions/

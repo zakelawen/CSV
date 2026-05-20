@@ -22,7 +22,7 @@ PYTHON_BIN=${PYTHON_BIN:-python}
 STEP9_SCRIPT=${STEP9_SCRIPT:-scripts/step9_train_csv_qwen3_4b.py}
 
 # Default to the HuggingFace name. Override with a local snapshot path if you
-# have one downloaded — the wrapper passes this through unchanged.
+# have one downloaded - the wrapper passes this through unchanged.
 # Example after running snapshot_download():
 #   /path/to/Qwen3-4B-Base
 QWEN3_4B_MODEL_PATH=${QWEN3_4B_MODEL_PATH:-Qwen/Qwen3-4B-Base}

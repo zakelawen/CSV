@@ -593,8 +593,8 @@ def write_global_summary_from_eval_files(pipeline_dir: Path = PIPELINE_DIR) -> l
     write_summary_csv(rows, summary_csv)
 
     print(f"Wrote Step12 global summary from {len(rows)} eval files")
-    print(f"Summary JSON → {summary_json}")
-    print(f"Summary CSV  → {summary_csv}")
+    print(f"Summary JSON -> {summary_json}")
+    print(f"Summary CSV  -> {summary_csv}")
     return rows
 
 
@@ -690,7 +690,7 @@ def main() -> None:
             f"max={alias_info.get('max_num_aliases')}  "
             f"multi_alias_samples={alias_info.get('num_multi_alias_samples')}"
         )
-        print(f"  Saved → {out_path}")
+        print(f"  Saved -> {out_path}")
         summary_rows.append(summary_row(result, out_path))
 
     # Keep the default summary files global, not "last run only". This avoids
@@ -700,8 +700,8 @@ def main() -> None:
 
     print("\n" + "=" * 80)
     print("Step12 done.")
-    print(f"Full summary JSON → {PIPELINE_DIR / 'pipeline_eval_summary.json'}")
-    print(f"Full summary CSV  → {PIPELINE_DIR / 'pipeline_eval_summary.csv'}")
+    print(f"Full summary JSON -> {PIPELINE_DIR / 'pipeline_eval_summary.json'}")
+    print(f"Full summary CSV  -> {PIPELINE_DIR / 'pipeline_eval_summary.csv'}")
     print("=" * 80)
 
 

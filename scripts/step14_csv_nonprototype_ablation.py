@@ -498,7 +498,7 @@ def process_model(args, model: str) -> list[Path]:
     train_data = load_split_as_prompts(args.variant, "train", tokenizer, args.limit)
     eval_data = load_split_as_prompts(args.variant, "eval", tokenizer, args.limit)
 
-    print("\nExtracting CSV-modified train representations …")
+    print("\nExtracting CSV-modified train representations ...")
     train_reps = extract_csv_reps(
         model=gen_model,
         prompts=train_data["prompts"],
@@ -509,7 +509,7 @@ def process_model(args, model: str) -> list[Path]:
     )
     print(f"  train reps: {train_reps.shape}")
 
-    print("\nExtracting CSV-modified eval representations …")
+    print("\nExtracting CSV-modified eval representations ...")
     eval_reps = extract_csv_reps(
         model=gen_model,
         prompts=eval_data["prompts"],
