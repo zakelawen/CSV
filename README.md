@@ -1,4 +1,4 @@
-# Context Separator Vector for RAG Document Utility
+# Steering Representations for Retrieved-Context Utility in Retrieval-Augmented Generation
 
 This repository contains the code and experiment notes for a retrieved-document
 utility classifier for retrieval-augmented generation (RAG). The project studies
