@@ -12,9 +12,9 @@ steering vector in a frozen LLM. No target LLM weights are fine-tuned.
 For a question-document pair `(q, d)`, a learned vector `v` is injected into an
 intermediate transformer layer `k`:
 
-```text
-H_tilde^k = H^k + lambda * v
-```
+$$
+\widetilde{H}^{k} = H^{k} + \lambda v
+$$
 
 The modified hidden states are propagated through the remaining frozen layers.
 At a classification layer `c`, the last prompt-token representation is compared
