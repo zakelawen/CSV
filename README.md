@@ -23,18 +23,24 @@ the retrieved-document classifier is used as a document-level gate: if the top-1
 retrieved document is predicted useful, the selected RAG/decoding method is run;
 otherwise generation falls back to a no-document prompt.
 
+## Framework Diagram
+
+![Framework diagram](figures/framework.png)
+
+The source PDF is available at [`figures/framework.pdf`](figures/framework.pdf).
+
 ## What Is Included
 
 ```text
 config/       Project paths and API configuration
 csv_module/   CSV layer wrappers and training utilities
+figures/      Framework diagram in PDF and PNG formats
 scripts/      Dataset construction, hidden-state extraction, baselines, CSV
               training, generation, evaluation, and analysis scripts
 third_party/  Local helper code for DoLA generation
 PLAN.md       Full experiment ledger and source-of-truth result mapping
 RUN_COMMANDS.md
               Compact command checklist for the main experiments
-EMNLP2026.pdf Optional paper draft snapshot
 requirements.txt
 .env.example
 ```
