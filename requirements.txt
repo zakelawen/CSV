@@ -1,0 +1,13 @@
+torch
+transformers
+accelerate
+datasets
+faiss-cpu
+numpy
+scikit-learn
+matplotlib
+tqdm
+requests
+sentencepiece
+protobuf
+safetensors

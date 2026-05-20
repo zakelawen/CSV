@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local environments and secrets
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+.vscode/
+
+# Large datasets, model caches, and generated hidden states
+data/**
+!data/
+!data/README.md
+*.arrow
+*.faiss
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# Experiment outputs. Keep lightweight paper summary tables if intentionally added.
+results/**
+!results/
+!results/analysis/
+!results/analysis/**
+!results/manual_validation/
+!results/manual_validation/*.csv
+!results/manual_validation/*.md
+logs/
+exports/
+
+# Remote-machine snapshots and packed artifacts
+autodl_5090_*/
+rag-probe-autodl/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# Local model directories
+CRAG/model/
+DPR/model/
+
+# Scratch notebooks/scripts
+test.ipynb
+scripts/test.ipynb
+scripts/test.py
+api_test.py
+
+# Paper build artifacts
+EMNLP2026/*.aux
+EMNLP2026/*.bbl
+EMNLP2026/*.blg
+EMNLP2026/*.fdb_latexmk
+EMNLP2026/*.fls
+EMNLP2026/*.log
+EMNLP2026/*.out
+EMNLP2026/*.synctex.gz
+EMNLP2026/acl_latex.pdf
+EMNLP2026/文件版本/
+
+# Top-level reference PDFs
+/*.pdf
+
+# Local experiment command ledger; README.md contains the cleaned reviewer-facing
+# reproduction commands.
+/运行指令.md
