@@ -314,19 +314,5 @@ The gated methods use the retrieved-document CSV classifier before generation.
 `tau` is the utility threshold; the experiment ledger records runs for
 `tau in {0.5, 0.4, 0.3}`.
 
-## Practical Notes
 
-- Full reproduction is GPU-heavy. The most expensive stages are hidden-state
-  extraction, CSV sweeps, and pipeline generation.
-- Step 3 can be skipped if released annotations are available.
-- Step 11 uses greedy decoding with `temperature=0.0`.
-- `CSV_RETRIEVED_DIR` can be set to point Step 11 at a specific retrieved-doc
-  CSV checkpoint directory.
-- The `.gitignore` is configured to exclude data, hidden states, checkpoints,
-  generated results, private environments, and local model files.
-- The repository is intentionally code-first; large reproducibility artifacts
-  should be distributed separately and restored into the paths listed above.
 
-## Citation
-
-Citation information will be added with the accompanying paper.
