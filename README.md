@@ -23,11 +23,7 @@ the retrieved-document classifier is used as a document-level gate: if the top-1
 retrieved document is predicted useful, the selected RAG/decoding method is run;
 otherwise generation falls back to a no-document prompt.
 
-## Framework Diagram
 
-![Framework diagram](figures/framework.png)
-
-The source PDF is available at [`figures/framework.pdf`](figures/framework.pdf).
 
 ## What Is Included
 
