@@ -1,10 +1,6 @@
 # Steering Representations for Retrieved-Context Utility in Retrieval-Augmented Generation
 
-This repository contains the code and experiment notes for a retrieved-document
-utility classifier for retrieval-augmented generation (RAG). The project studies
-whether a frozen LLM's hidden states can distinguish answer-supporting retrieved
-documents from distracting ones, and whether that signal can be used as a
-lightweight gate for existing RAG and contrastive decoding methods.
+
 
 The main method is a **Context Separator Vector (CSV)**. CSV learns a small
 steering vector in a frozen LLM. No target LLM weights are fine-tuned.
@@ -41,9 +37,7 @@ requirements.txt
 .env.example
 ```
 
-Large artifacts are intentionally not committed. This includes DPR corpora,
-FAISS indexes, model weights, hidden-state tensors, checkpoints, generated
-answers, logs, AutoDL snapshots, and full result directories.
+
 
 ## Install
 
@@ -53,8 +47,6 @@ Use Python 3.10 or newer. Install the repository dependencies:
 pip install -r requirements.txt
 ```
 
-For GPU runs, install a CUDA-compatible PyTorch build for your machine. Optional
-baselines have additional requirements:
 
 ```text
 Self-RAG baseline: vllm and a local Self-RAG checkpoint
@@ -87,13 +79,10 @@ Step 3 uses an external LLM annotator. To rebuild annotations from scratch, set:
 export GPT_API_KEY=<your_api_key>
 ```
 
-`.env.example` contains all commonly used variables. Do not commit real API keys,
-private model paths, or generated artifacts.
 
 ## Data Expected by the Code
 
-The code expects all data under `data/`. To reproduce from raw DPR-style
-resources, prepare:
+
 
 ```text
 data/dpr_download/nq-train.json
@@ -215,8 +204,7 @@ The main retrieved-document CSV checkpoints used by the pipeline are:
 | Gemma2-2B | 14 | 18 | best retrieved-doc gate in the experiment ledger |
 | Qwen3-4B | 21 | 22 | best hparam-grid checkpoint used for pipeline evaluation |
 
-The default steering strength is `lambda=5.0`; the prototype cosine temperature
-is `0.1`.
+
 
 ### 5. Run Generation and Evaluation
 
@@ -270,9 +258,6 @@ results/analysis/                              paper-table summaries
 results/manual_validation/                     manual label validation summaries
 ```
 
-`PLAN.md` is the detailed experiment ledger. It maps paper-facing tables and
-claims to concrete result files, including the final source-of-truth summary
-used for pipeline numbers.
 
 ## Sanity-Check Numbers
 
